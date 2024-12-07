@@ -3,29 +3,38 @@ const Payment = require('../models/payment'); // Importation du modèle Payment
 // Ajouter un paiement
 const addPayment = async (req, res) => {
     try {
-        const { montant, datePaiement, methodePaiement, idReservation } = req.body;
-        
+        const { reservationId, montant, datePaiement, modePaiement, status } = req.body;
+
         // Vérification des données reçues
-        if (!montant || !datePaiement || !methodePaiement || !idReservation) {
+        if (!reservationId || !montant || !datePaiement || !modePaiement || !status) {
             return res.status(400).json({ message: "Tous les champs sont obligatoires" });
         }
 
         // Création d'un nouvel objet Payment
         const newPayment = new Payment({
+            reservationId,
             montant,
             datePaiement,
-            methodePaiement,
-            idReservation
+            modePaiement,
+            status
         });
 
         // Sauvegarde du paiement dans la base de données
         await newPayment.save();
-        res.status(201).json({ message: "Paiement ajouté avec succès", payment: newPayment });
+
+        res.status(201).json({
+            message: "Paiement ajouté avec succès",
+            payment: newPayment
+        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur lors de l'ajout du paiement", error: error.message });
+        console.error("Erreur lors de l'ajout du paiement :", error);
+        res.status(500).json({
+            message: "Erreur lors de l'ajout du paiement",
+            error: error.message
+        });
     }
 };
+
 
 // Récupérer tous les paiements
 const getAllPayments = async (req, res) => {

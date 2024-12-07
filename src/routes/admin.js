@@ -81,6 +81,29 @@ router.get("/logout", (req, res) => {
         res.redirect("/admin/login");
     });
 });
+// Update Voyage
+router.post("/voyage/:id", adminMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { destination, datedepart, dateretour, prix } = req.body;
+
+        const updatedVoyage = await Voyage.findByIdAndUpdate(
+            id,
+            { destination, datedepart, dateretour, prix },
+            { new: true, runValidators: true } // `new` retourne l'objet mis à jour
+        );
+
+        if (!updatedVoyage) {
+            return res.status(404).send("Voyage not found");
+        }
+
+        res.redirect("/admin/voyages"); // Redirection après la mise à jour
+    } catch (error) {
+        console.error("Error updating voyage:", error);
+        res.status(500).send("Error updating voyage");
+    }
+});
+
 
 // Client Management
 router.get("/clients", adminMiddleware, renderClients);

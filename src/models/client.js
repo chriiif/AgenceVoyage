@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const clientSchema = new mongoose.Schema({
-    
     nom: {
         type: String,
         required: [true, "Le nom est obligatoire"],
@@ -15,7 +14,7 @@ const clientSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, "L'email est obligatoire"],
-        unique: true, // Empêche les doublons d'email
+        unique: true,
         match: [
             /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
             "Veuillez entrer un email valide",
@@ -26,6 +25,11 @@ const clientSchema = new mongoose.Schema({
         required: [true, "Le numéro de téléphone est obligatoire"],
         match: [/^\d{10}$/, "Le numéro de téléphone doit comporter 10 chiffres"],
     },
+    password: {
+        type: String,
+        required: [true, "Le mot de passe est obligatoire"],
+        minlength: [6, "Le mot de passe doit contenir au moins 6 caractères"],
+    }
 });
 
 const Client = mongoose.model("Client", clientSchema);

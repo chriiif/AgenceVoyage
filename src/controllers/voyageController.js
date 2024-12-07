@@ -37,25 +37,33 @@ const voyageController = {
 
     // Mettre à jour un voyage par ID
     updateVoyage: async (req, res) => {
+        console.log("Données reçues :", req.body);
+        console.log("ID du voyage :", req.params.id);
+      
         try {
-            const updatedVoyage = await Voyage.findOneAndUpdate(
-                { idVoyage: req.params.id },
-                req.body,
-                { new: true }
-            );
-            if (!updatedVoyage) {
-                return res.status(404).json({ message: "Voyage non trouvé" });
-            }
-            res.status(200).json(updatedVoyage);
+          const updatedVoyage = await Voyage.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+          );
+      
+          if (!updatedVoyage) {
+            return res.status(404).json({ message: "Voyage non trouvé" });
+          }
+      
+          res.status(200).redirect("/admin/voyages")
         } catch (error) {
-            res.status(500).json({ message: "Erreur lors de la mise à jour du voyage", error });
+          console.error("Erreur :", error);
+          res.status(500).json({ message: "Erreur lors de la mise à jour du voyage", error });
         }
-    },
+      },
+      
+      
 
     // Supprimer un voyage par ID
     deleteVoyage: async (req, res) => {
         try {
-            const deletedVoyage = await Voyage.findOneAndDelete({ idVoyage: req.params.id });
+            const deletedVoyage = await Voyage.findByIdAndDelete(req.params.id); // Utilisez findByIdAndDelete
             if (!deletedVoyage) {
                 return res.status(404).json({ message: "Voyage non trouvé" });
             }
@@ -63,7 +71,7 @@ const voyageController = {
         } catch (error) {
             res.status(500).json({ message: "Erreur lors de la suppression du voyage", error });
         }
-    },
+    },    
 };
 
 module.exports = voyageController;

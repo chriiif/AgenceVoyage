@@ -12,7 +12,7 @@ router.get("/:id", voyageController.getVoyageById);
 router.post("/add", voyageController.addVoyage);
 
 // Mettre à jour un voyage par ID
-router.put("/:id", voyageController.updateVoyage);
+router.post("/:id", voyageController.updateVoyage);
 
 // Supprimer un voyage par ID
 router.delete("/effacer/:id", voyageController.deleteVoyage);

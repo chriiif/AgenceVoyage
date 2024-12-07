@@ -1,4 +1,7 @@
 const Client = require("../models/client");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 
 const clientController = {
     // Récupérer tous les clients
@@ -27,12 +30,38 @@ const clientController = {
     // Ajouter un nouveau client
     addClient: async (req, res) => {
         try {
-            const newClient = new Client(req.body);
+            console.log("Données reçues :", req.body);
+
+            const { nom, prenom, email, tel, password } = req.body;
+
+            // Vérifiez que toutes les données nécessaires sont présentes
+            if (!nom || !prenom || !email || !tel || !password) {
+                return res.status(400).json({ message: "Tous les champs sont requis." });
+            }
+
+            // Hash du mot de passe
+            const hashedPassword = await bcrypt.hash(password, 10);
+            console.log("Mot de passe hashé :", hashedPassword);
+
+            // Création du client
+            const newClient = new Client({
+                nom,
+                prenom,
+                email,
+                tel,
+                password: hashedPassword,
+            });
+
+            // Sauvegarde dans MongoDB
             await newClient.save();
+            console.log("Client ajouté avec succès :", newClient);
+
             res.status(201).json(newClient);
         } catch (error) {
+            console.error("Erreur lors de l'ajout du client :", error);
+
             if (error.code === 11000) {
-                res.status(400).json({ message: "L'idClient ou l'email existe déjà", error });
+                res.status(400).json({ message: "L'email existe déjà.", error });
             } else {
                 res.status(500).json({ message: "Erreur lors de l'ajout du client", error });
             }
@@ -66,6 +95,46 @@ const clientController = {
             res.status(200).json({ message: "Client supprimé avec succès" });
         } catch (error) {
             res.status(500).json({ message: "Erreur lors de la suppression du client", error });
+        }
+    },
+
+    loginClient: async (req, res) => {
+        try {
+            const { email, password } = req.body;
+
+            console.log("Données reçues pour la connexion :", { email, password });
+
+            // Vérifiez si l'email existe dans la base de données
+            const client = await Client.findOne({ email });
+            if (!client) {
+                console.log("Aucun client trouvé avec cet email :", email);
+                return res.status(404).json({ message: "Email ou mot de passe incorrect" });
+            }
+
+            console.log("Client trouvé :", client);
+
+            // Vérifiez le mot de passe
+            const isPasswordValid = await bcrypt.compare(password, client.password);
+            if (!isPasswordValid) {
+                console.log("Mot de passe incorrect pour l'email :", email);
+                return res.status(401).json({ message: "Email ou mot de passe incorrect" });
+            }
+
+            console.log("Mot de passe validé pour le client :", client.email);
+
+            // Générer un token JWT
+            const token = jwt.sign(
+                { id: client._id, email: client.email },
+                process.env.JWT_SECRET || "secret_temporary_key", // Utilisez une clé sécurisée
+                { expiresIn: "1h" }
+            );
+
+            console.log("Token généré :", token);
+
+            res.status(200).json({ message: "Connexion réussie", token });
+        } catch (error) {
+            console.error("Erreur lors de la connexion :", error);
+            res.status(500).json({ message: "Erreur lors de la connexion", error });
         }
     },
 };

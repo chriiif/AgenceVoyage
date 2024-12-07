@@ -73,7 +73,6 @@
           <h1 class="h2">Manage Voyages</h1>
         </header>
 
-        <!-- Add Voyage Form (without ID Voyage) -->
         <section class="my-4">
           <h3>Add a New Voyage</h3>
           <form action="/admin/voyage/add" method="POST">
@@ -116,6 +115,44 @@
                   <td><%= new Date(voyage.dateretour).toLocaleDateString() %></td>
                   <td>$<%= voyage.prix %></td>
                   <td>
+                    <!-- Update Voyage Form -->
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModal-<%= voyage._id %>">Update</button>
+                    
+                    <!-- Modal -->
+                    <div class="modal fade" id="updateModal-<%= voyage._id %>" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <form action="/voyages/<%= voyage._id %>" method="POST" class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Update Voyage</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="mb-3">
+                              <label for="destination-<%= voyage._id %>" class="form-label">Destination</label>
+                              <input type="text" class="form-control" id="destination-<%= voyage._id %>" name="destination" value="<%= voyage.destination %>" required>
+                            </div>
+                            <div class="mb-3">
+                              <label for="datedepart-<%= voyage._id %>" class="form-label">Departure Date</label>
+                              <input type="date" class="form-control" id="datedepart-<%= voyage._id %>" name="datedepart" value="<%= voyage.datedepart.toISOString().split('T')[0] %>" required>
+                            </div>
+                            <div class="mb-3">
+                              <label for="dateretour-<%= voyage._id %>" class="form-label">Return Date</label>
+                              <input type="date" class="form-control" id="dateretour-<%= voyage._id %>" name="dateretour" value="<%= voyage.dateretour.toISOString().split('T')[0] %>" required>
+                            </div>
+                            <div class="mb-3">
+                              <label for="prix-<%= voyage._id %>" class="form-label">Price</label>
+                              <input type="number" class="form-control" id="prix-<%= voyage._id %>" name="prix" value="<%= voyage.prix %>" required>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+
+                    <!-- Delete Voyage Form -->
                     <form action="/admin/voyage/delete/<%= voyage._id %>" method="POST" style="display: inline;">
                       <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this voyage?')">Delete</button>
                     </form>

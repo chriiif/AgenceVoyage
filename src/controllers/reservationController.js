@@ -12,7 +12,7 @@ const ReservationController = {
             const client = await Client.findById(clientId);
             const voyage = await Voyage.findById(voyageId);
 
-            if (!client || !voyage) {
+            if ( !voyage) {
                 return res.status(404).json({ message: 'Client ou Voyage non trouvé' });
             }
 

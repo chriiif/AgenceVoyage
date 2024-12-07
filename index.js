@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const path = require("path");
+require('dotenv').config();
 
 const clientRoutes = require("./src/routes/clientRoutes");
 const reservationRoutes = require("./src/routes/reservationRoutes");
@@ -43,6 +44,7 @@ app.set("views", path.join(__dirname, "src", "views"));
 console.log("Views directory set to:", path.join(__dirname, "src", "views"));
 console.log('Views directory:', path.join(__dirname, 'src', 'views'));
 console.log('Partials directory:', path.join(__dirname, 'src', 'views', 'partials'));
+
 
 
 
